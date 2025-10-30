@@ -7,8 +7,8 @@ import Image from "next/image";
 export default function Home() {
   return (
    <>
-   <div className="container mx-auto w-full h-full">
-    <Navbar />
+   <div className="container mx-auto w-full h-full p-2">
+  
    <HeroSection />
    <Blog/>
    </div>

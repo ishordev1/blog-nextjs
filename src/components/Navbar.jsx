@@ -14,7 +14,7 @@ const Navbar = () => {
     <>
       <nav className=" p-2 bg-background/50 sticky top-0 backdrop-blur border-b z-10 ">
         <div className="container mx-auto flex items-center justify-between">
-          <div className="font-bold text-lg">
+          <div className="font-bold text-2xl">
             MyBlog
           </div>
           <div className="md:flex space-x-4 hidden">
@@ -25,8 +25,8 @@ const Navbar = () => {
           </div>
           <div className="md:flex hidden items-center ">
             <ModeToggle />
-            <Button variant="outline" className="mx-1">Login</Button>
-            <Button variant="outline" className="mx-1">Signup</Button>
+            <Button variant="outline" className="mx-1"><Link href="/signin">Login</Link></Button>
+            <Button variant="outline" className="mx-1"><Link href="/signup">Signup</Link></Button>
           </div>
           <div className="md:hidden flex items-center" variant="outline">
  <ModeToggle />
@@ -45,8 +45,8 @@ const Navbar = () => {
             <Link href="/blog">Blog</Link>
           
           <div className="flex items-center mt-3">
-            <Button variant="outline" className="text-xs">Login</Button>
-            <Button variant="outline" className="mx-1 text-xs">Signup</Button>
+            <Button variant="outline" className="text-xs"><Link href="/signin">Login</Link></Button>
+            <Button variant="outline" className="mx-1 text-xs"><Link href="/signup">Signup</Link></Button>
           </div>
           </div>
                   </SheetDescription>
