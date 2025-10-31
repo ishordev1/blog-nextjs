@@ -13,12 +13,12 @@ export async function POST(req) {
         { status: 500 }
       );
     }
-    connectionDB();
+    await connectionDB();
     const user = await User.findOne({ email });
     if (!user) {
       return NextResponse.json({ message: "email is wrong..", success: false });
     }
-    const isCompare = bcrypt.compare(password, user.password);
+    const isCompare = await bcrypt.compare(password, user.password);
     if (!isCompare) {
       return NextResponse.json({
         message: "password is wrong..",
@@ -27,7 +27,8 @@ export async function POST(req) {
     }
     const token = jwt.sign(
       {
-        data: user,
+        _id: user._id,
+        name: user.name,
       },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "1d" }

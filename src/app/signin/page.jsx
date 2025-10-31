@@ -8,12 +8,14 @@ import {
   FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { signin } from "@/service/Auth"
+import { getCurrentUser, signin } from "@/service/Auth"
 import { useRouter } from "next/navigation"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import toast from "react-hot-toast"
+import { UserContext } from "../context/UserProvider"
 const page = () => {
+  const {setUser}=useContext(UserContext)
   const route=useRouter()
   const [formData,setFormData]=useState({
     email:"",
@@ -34,6 +36,8 @@ try {
   
  if(res.success){
     toast.success("signin successfully")
+ const user = await getCurrentUser();
+    setUser(user);
     route.push('/admin/dashboard')
   }
   else{

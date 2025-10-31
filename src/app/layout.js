@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
+import { UserProvider } from "./context/UserProvider";
 
 export const metadata = {
   title: "Create Next App",
@@ -20,11 +21,13 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
-          <Toaster position="top-center" reverseOrder={false} />
-          {children}
+          <UserProvider>
+            <Navbar />
+            <Toaster position="top-center" reverseOrder={false} />
+            {children}
+            <Footer />
+          </UserProvider>
         </ThemeProvider>
-        <Footer />
       </body>
     </html>
   );
