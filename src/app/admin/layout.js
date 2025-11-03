@@ -98,10 +98,8 @@ export default function AdminLayout({ children }) {
           </div>
         </div>
       </div>
-      <div className="border border-red-500 flex-1 w-screen">
-        <main className=" border border-green-500 p-4 container mx-auto">
-          {children}
-        </main>
+      <div className=" flex-1 w-[80%]">
+        <main className="p-4">{children}</main>
       </div>
     </div>
   );

@@ -35,7 +35,7 @@ export default function BlogsPage() {
   ];
 
   return (
-    <div className="p-4 space-y-6 w-full">
+    <div className="">
       {/* Header Section */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-2xl font-bold">Manage Blogs</h1>
