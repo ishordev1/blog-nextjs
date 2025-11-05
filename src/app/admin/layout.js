@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import {
   Sheet,
@@ -7,14 +8,26 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useContext, useEffect } from "react";
+import { UserContext } from "../context/UserProvider";
+import { useRouter } from "next/navigation";
 
 export default function AdminLayout({ children }) {
+  const { user } = useContext(UserContext);
+  const router = useRouter();
+  useEffect(() => {
+    if (!user) {
+      router.push("/signin");
+    }
+  }, [user]);
+
   return (
     <div className="flex container mx-auto border bg-gray-50">
       <div className="sidebar border">
         <div className="p-2  md:block hidden ">
           <h2 className="text-xl font-bold">Admin Panel</h2>
           <hr />
+          <p>{user && user.name}</p>
           <nav className="space-y-2 mt-4">
             <Link
               href="/admin/dashboard"

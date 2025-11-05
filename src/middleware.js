@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-
+import jwt from "jsonwebtoken";
 export function middleware(request) {
   const authToken = request.cookies.get("authToken")?.value;
 
@@ -8,7 +8,7 @@ export function middleware(request) {
     request.nextUrl.pathname === "/api/signin" ||
     request.nextUrl.pathname === "/api/signup"
   ) {
-    return;
+    return NextResponse.next();
   }
 
   if (authToken) {
@@ -23,19 +23,12 @@ export function middleware(request) {
       request.nextUrl.pathname.startsWith("/signin") ||
       request.nextUrl.pathname.startsWith("/signup")
     ) {
-      return;
+      return NextResponse.next();
     } else {
       return NextResponse.redirect(new URL("/signin", request.url));
     }
   }
 }
 export const config = {
-  matcher: [
-    "/dashboard",
-    "/profile",
-    "/settings",
-    "/signin",
-    "/signup",
-    "/api/:path*",
-  ],
+  matcher: ["/", "/signin", "/signup", "/admin/:path*", "/api/:path*"],
 };

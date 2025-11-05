@@ -14,7 +14,10 @@ import { useContext } from "react";
 import { UserContext } from "@/app/context/UserProvider";
 import { logout, logoutUser } from "@/service/Auth";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+
 const Navbar = () => {
+  const route = useRouter();
   const { user, setUser } = useContext(UserContext);
   // console.log(user.email);
   const handlerLogout = async () => {
