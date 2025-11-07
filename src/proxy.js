@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-export function middleware(request) {
+export function proxy(request) {
   const authToken = request.cookies.get("authToken")?.value;
 
   if (

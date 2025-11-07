@@ -22,17 +22,14 @@ export default function AdminLayout({ children }) {
   }, [user]);
 
   return (
-    <div className="flex container mx-auto border bg-gray-50">
+    <div className="flex container mx-auto border ">
       <div className="sidebar border">
         <div className="p-2  md:block hidden ">
           <h2 className="text-xl font-bold">Admin Panel</h2>
           <hr />
-          <p>{user && user.name}</p>
+
           <nav className="space-y-2 mt-4">
-            <Link
-              href="/admin/dashboard"
-              className="block p-2 rounded hover:bg-gray-100"
-            >
+            <Link href="/admin/dashboard" className="block p-2 rounded ">
               Dashboard
             </Link>
             <Link
