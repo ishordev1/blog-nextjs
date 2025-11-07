@@ -2,13 +2,17 @@ import { connectionDB } from "@/lib/ConnectionDB";
 import { Blogs } from "@/model/Blogs";
 import { User } from "@/model/Users";
 import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 
 export async function POST(req) {
-  const { title, description, imgUrl, userId } = await req.json();
-  console.log("data" + title, description, imgUrl, userId);
+  const { title, description, imgUrl } = await req.json();
+  // console.log("data" + title, description, imgUrl, userId);
   try {
     await connectionDB();
-    const user = await User.findOne({ _id: userId });
+    const authToken = req.cookies.get("authToken")?.value;
+    const data = jwt.verify(authToken, process.env.JWT_SECRET_KEY);
+
+    const user = await User.findOne({ _id: data._id });
     // console.log(user);
 
     if (!user) {

@@ -25,6 +25,11 @@ const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 const Page = () => {
   const editor = useRef(null);
   const [content, setContent] = useState("");
+  const [description, setDescription] = useState("");
+  const [data, setData] = useState({
+    title: "",
+    visiblity: "",
+  });
 
   const config = useMemo(
     () => ({
@@ -39,24 +44,30 @@ const Page = () => {
     []
   );
 
-  const handleBlur = useCallback((newContent) => {
-    setContent(newContent);
-  }, []);
-
   return (
     <div className="container mx-auto">
+      {JSON.stringify(description)}
+      {JSON.stringify(data)}
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl text-center">Add Blog</CardTitle>
         </CardHeader>
         <CardContent>
-          <Input type="text" placeholder="title" className="mb-3" />
+          <Input
+            type="text"
+            onChange={(e) => setData({ ...data, title: e.target.value })}
+            value={data.title || ""}
+            placeholder="title"
+            className="mb-3"
+          />
 
           <JoditEditor
             ref={editor}
-            value={content}
+            value={description || ""}
             config={config}
-            onBlur={handleBlur}
+            onChange={(e) =>
+              setDescription({ ...description, description: e.target.value })
+            }
           />
 
           <div className="grid w-full my-3 items-center">
@@ -64,7 +75,10 @@ const Page = () => {
             <Input id="picture" type="file" />
           </div>
 
-          <Select className="mt-3">
+          <Select
+            className="mt-3"
+            onValueChange={(value) => setData({ ...data, visiblity: value })}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Post visibility" />
             </SelectTrigger>
