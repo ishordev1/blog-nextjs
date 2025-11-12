@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
@@ -11,37 +11,62 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import { deleteBlog, getAllBlogs } from "@/service/BlogService";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import toast from "react-hot-toast";
+import Loading from "@/app/loading";
 
 export default function BlogsPage() {
-  const blogs = [
-    {
-      id: 1,
-      title: "Next.js Tips for Beginners",
-      author: "Ishor",
-      status: "Published",
-    },
-    {
-      id: 2,
-      title: "Understanding React Hooks",
-      author: "Admin",
-      status: "Draft",
-    },
-    {
-      id: 3,
-      title: "How to Use Shadcn UI",
-      author: "Guest",
-      status: "Published",
-    },
-  ];
+  const [blogs, setBlogs] = useState([]);
+  const [showLoading, setShowLoading] = useState(true);
+  useEffect(() => {
+    async function fetchBlogs() {
+      setShowLoading(true);
+      try {
+        const response = await getAllBlogs();
+        setBlogs(response.blogs);
+        setShowLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch blogs:", error);
+        setShowLoading(false);
+      }
+    }
+    fetchBlogs();
+  }, []);
 
+  const deleteHandler = async (id) => {
+    // console.log("Delete blog with id:", id);
+    try {
+      const res = await deleteBlog(id);
+      if (res.success) {
+        setBlogs(blogs.filter((blog) => blog._id !== id));
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      console.log("blog not delete", error);
+    }
+  };
+
+  if (showLoading) {
+    return <Loading />;
+  }
   return (
     <div className="">
       {/* Header Section */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-2xl font-bold">Manage Blogs</h1>
-        <Link href="/admin/blogs/create">
-          <Button>Add New Blog</Button>
-        </Link>
       </div>
 
       {/* Blog List */}
@@ -55,38 +80,74 @@ export default function BlogsPage() {
           <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow>
+                <TableHead>Thumbnail</TableHead>
                 <TableHead>Title</TableHead>
-                <TableHead>Author</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {blogs.map((blog) => (
-                <TableRow key={blog.id}>
-                  <TableCell>{blog.title}</TableCell>
-                  <TableCell>{blog.author}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded text-sm ${
-                        blog.status === "Published"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {blog.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button variant="outline" size="sm">
-                      Edit
-                    </Button>
-                    <Button variant="destructive" size="sm">
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {blogs &&
+                blogs.map((blog) => (
+                  <TableRow key={blog._id}>
+                    <TableCell>
+                      {
+                        <img
+                          src={blog.imgUrl}
+                          className="h-[50px] w-[100px]"
+                          alt={blog.title}
+                        />
+                      }
+                    </TableCell>
+                    <TableCell>{blog.title}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`px-2 py-1 rounded text-sm ${
+                          blog.visibility === "Public"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-yellow-100 text-yellow-700"
+                        }`}
+                      >
+                        {blog.visibility}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <Link href={`/admin/blog/${blog._id}`}>
+                        <Button variant="outline" size="sm">
+                          Edit
+                        </Button>
+                      </Link>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            Delete
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete your account and remove your
+                              data from our servers.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => deleteHandler(blog._id)}
+                            >
+                              Continue
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </CardContent>

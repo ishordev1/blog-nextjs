@@ -19,12 +19,14 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@radix-ui/react-dropdown-menu";
+import { saveBlog } from "@/service/BlogService";
+import toast from "react-hot-toast";
+import JoditEditor from "jodit-react";
 
-const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 const Page = () => {
   const editor = useRef(null);
-  const [content, setContent] = useState("");
+  const [image, setImage] = useState("");
   const [description, setDescription] = useState("");
   const [data, setData] = useState({
     title: "",
@@ -36,7 +38,6 @@ const Page = () => {
       readonly: false,
       height: 400,
       placeholder: "Start typing...",
-
       style: {
         color: "black",
       },
@@ -44,13 +45,36 @@ const Page = () => {
     []
   );
 
+  const handlerSubmit=async(e)=>{
+    e.preventDefault()
+    if(!data.title || !description || !data.visiblity){
+      toast.error("Title, Description and Visibility are required");
+      return;
+    }
+    try{
+      const imgUrl="https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=500&h=300&fit=crop"
+      const blog=await saveBlog({ ...data, description, imgUrl });
+      toast.success("Blog saved successfully");
+      setData({title:"", visiblity:""});
+      setDescription("");
+      setImage("");
+    }
+  
+
+    catch(err){
+      console.log("error in saving blog", err);
+      toast.error("Error in saving blog");
+    }
+  }
+
   return (
     <div className="container mx-auto">
-      {JSON.stringify(description)}
       {JSON.stringify(data)}
+      {JSON.stringify(description)}
+      <form onSubmit={handlerSubmit}>
       <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl text-center">Add Blog</CardTitle>
+        <CardHeader >
+          <CardTitle className="text-2xl text-center -m-3">Add Blog</CardTitle>
         </CardHeader>
         <CardContent>
           <Input
@@ -61,25 +85,54 @@ const Page = () => {
             className="mb-3"
           />
 
-          <JoditEditor
-            ref={editor}
-            value={description || ""}
-            config={config}
-            onChange={(e) =>
-              setDescription({ ...description, description: e.target.value })
-            }
-          />
+          <div className="jodit-editor-container text-black h-[400px]">
+            <JoditEditor
+              ref={editor}
+              value={description}
+              config={{
+                readonly: false,
+                placeholder: 'Start typing...',
 
-          <div className="grid w-full my-3 items-center">
-            <Label htmlFor="picture">Picture</Label>
-            <Input id="picture" type="file" />
+                height: 400,
+                // style: {
+                //   fontFamily: 'inherit',
+                //   fontSize: '14px'
+                // },
+                // disablePlugins: ['paste', 'stat']
+              }}
+              onBlur={(newContent) => {
+                setDescription(newContent);
+              }}
+            />
           </div>
+          <div className="flex items-center mt-3 justify-center">
+            {
+            image && (
+         <>
+            <img
+              src={URL.createObjectURL(image)}
+              alt="preview"
+              className="m-2 h-48 w-[200px] object-cover rounded-lg"
+            />
+          <Button variant="destructive" onClick={() => setImage("")}>
+              Remove
+            </Button>
+         </>
+          )
+          }
+          </div>
+          <div className="grid w-full my-3 items-center">
+            <Label htmlFor="picture">Post Thumbnail</Label>
+            <Input id="picture" onChange={(e) => setImage(e.target.files[0])} type="file"  />
+          </div>
+          
 
           <Select
             className="mt-3"
             onValueChange={(value) => setData({ ...data, visiblity: value })}
+            value={data.visiblity || ""}
           >
-            <SelectTrigger>
+            <SelectTrigger >
               <SelectValue placeholder="Post visibility" />
             </SelectTrigger>
             <SelectContent>
@@ -95,6 +148,7 @@ const Page = () => {
           </Button>
         </CardFooter>
       </Card>
+      </form>
     </div>
   );
 };

@@ -38,12 +38,12 @@ export default function AdminLayout({ children }) {
             >
               Posts
             </Link>
-            <Link
+            {/* <Link
               href="/admin/users"
               className="block p-2 rounded hover:bg-gray-100"
             >
               Users
-            </Link>
+            </Link> */}
             <Link
               href="/admin/add-blog"
               className="block p-2 rounded hover:bg-gray-100"
