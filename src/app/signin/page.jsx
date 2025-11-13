@@ -16,6 +16,7 @@ import toast from "react-hot-toast"
 import { UserContext } from "../context/UserProvider"
 const page = () => {
   const {setUser}=useContext(UserContext)
+  const[loadingBtn,setLoadingBtn]=useState(false)
   const route=useRouter()
   const [formData,setFormData]=useState({
     email:"",
@@ -31,8 +32,9 @@ const page = () => {
   const handlerSubmit=async (e)=>{
     e.preventDefault();
 try {
+  setLoadingBtn(true)
   const res=await signin(formData)
-  console.log(res);
+  // console.log(res);
   
  if(res.success){
     toast.success("signin successfully")
@@ -47,6 +49,9 @@ try {
   console.log(error);
   toast.error("signin fail...")
   
+}
+finally{
+   setLoadingBtn(false)
 }
     
   }
@@ -72,7 +77,18 @@ try {
             <Input id="password" type="password" placeholder="••••••••" onChange={e=>setFormData({...formData, password:e.target.value})} value={formData.password} />
           </Field>
         </FieldGroup>
-         <Button variant="outline" type="submit">Sign In</Button>
+         <Button variant="outline" disabled={loadingBtn} type="submit">
+          {
+            loadingBtn? "signing...":"submit"
+          }
+
+          
+          
+          
+          
+          
+          </Button>
+         
       </FieldSet>
     </div>
    </div>

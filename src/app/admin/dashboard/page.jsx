@@ -4,7 +4,7 @@ import React from "react";
 const page = () => {
   return (
     <>
-      <div className=" bg-gray-50">dashboard page test</div>
+    <h1>test</h1>
     </>
   );
 };

@@ -23,6 +23,7 @@
     "axios": "^1.13.1",
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.8.0",
     "clsx": "^2.1.1",
     "jodit-react": "^5.2.38",
     "jsonwebtoken": "^9.0.2",

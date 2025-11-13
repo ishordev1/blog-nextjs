@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import { deleteBlog, getAllBlogs } from "@/service/BlogService";
+import { deleteBlog, getAllBlogs, getAllBlogsByOwner } from "@/service/BlogService";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,7 +33,7 @@ export default function BlogsPage() {
     async function fetchBlogs() {
       setShowLoading(true);
       try {
-        const response = await getAllBlogs();
+        const response = await getAllBlogsByOwner();
         setBlogs(response.blogs);
         setShowLoading(false);
       } catch (error) {
@@ -48,14 +48,17 @@ export default function BlogsPage() {
     // console.log("Delete blog with id:", id);
     try {
       const res = await deleteBlog(id);
+      
       if (res.success) {
         setBlogs(blogs.filter((blog) => blog._id !== id));
-        toast.success(res.message);
-      } else {
-        toast.error(res.message);
-      }
+        toast.success("delete post successfully");
+      } 
     } catch (error) {
-      console.log("blog not delete", error);
+        toast.error(error.message );
+        // console.log(error);
+        
+        
+
     }
   };
 
@@ -77,7 +80,10 @@ export default function BlogsPage() {
 
         {/* 👇 Make table scrollable on mobile */}
         <CardContent className="overflow-x-auto">
-          <Table className="min-w-[600px]">
+         {
+          blogs.length > 0 ? 
+          <>
+           <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Thumbnail</TableHead>
@@ -103,7 +109,7 @@ export default function BlogsPage() {
                     <TableCell>
                       <span
                         className={`px-2 py-1 rounded text-sm ${
-                          blog.visibility === "Public"
+                          blog.visibility === "public"
                             ? "bg-green-100 text-green-700"
                             : "bg-yellow-100 text-yellow-700"
                         }`}
@@ -150,6 +156,10 @@ export default function BlogsPage() {
                 ))}
             </TableBody>
           </Table>
+          </>
+:
+          <div className="text-center my-4">No blogs found.</div>
+         }
         </CardContent>
       </Card>
     </div>

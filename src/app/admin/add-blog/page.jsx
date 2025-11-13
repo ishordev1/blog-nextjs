@@ -21,16 +21,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { saveBlog } from "@/service/BlogService";
 import toast from "react-hot-toast";
-import JoditEditor from "jodit-react";
+import { fileUpload } from "@/service/FileUploadService";
+import { Loader2 } from "lucide-react";
 
+
+const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 const Page = () => {
   const editor = useRef(null);
   const [image, setImage] = useState("");
   const [description, setDescription] = useState("");
+  const [loadingBtn, setLoadingBtn] = useState(false);
   const [data, setData] = useState({
     title: "",
-    visiblity: "",
+    visibility: "",
   });
 
   const config = useMemo(
@@ -47,23 +51,40 @@ const Page = () => {
 
   const handlerSubmit=async(e)=>{
     e.preventDefault()
-    if(!data.title || !description || !data.visiblity){
+    if(!data.title || !description || !data.visibility){
       toast.error("Title, Description and Visibility are required");
       return;
     }
     try{
-      const imgUrl="https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=500&h=300&fit=crop"
+      setLoadingBtn(true)
+      if(!image){
+        toast.error("Please upload a thumbnail image");
+        return;
+      }
+      const imgUrl=await fileUpload(image,"blog_thumbnails");
+      // console.log(imgUrl);
+      
+      if(imgUrl==="error"){
+        toast.error("Error in uploading image");
+        return;
+      }
       const blog=await saveBlog({ ...data, description, imgUrl });
+  
+      
       toast.success("Blog saved successfully");
-      setData({title:"", visiblity:""});
+      setData({title:"", visibility:""});
       setDescription("");
       setImage("");
+       setLoadingBtn(false)
     }
   
 
     catch(err){
       console.log("error in saving blog", err);
       toast.error("Error in saving blog");
+    }
+    finally{
+      setLoadingBtn(false)
     }
   }
 
@@ -85,7 +106,7 @@ const Page = () => {
             className="mb-3"
           />
 
-          <div className="jodit-editor-container text-black h-[400px]">
+          <div className="jodit-editor-container text-black  h-[400px]">
             <JoditEditor
               ref={editor}
               value={description}
@@ -129,8 +150,8 @@ const Page = () => {
 
           <Select
             className="mt-3"
-            onValueChange={(value) => setData({ ...data, visiblity: value })}
-            value={data.visiblity || ""}
+            onValueChange={(value) => setData({ ...data, visibility: value })}
+            value={data.visibility || ""}
           >
             <SelectTrigger >
               <SelectValue placeholder="Post visibility" />
@@ -142,11 +163,22 @@ const Page = () => {
           </Select>
         </CardContent>
 
-        <CardFooter>
-          <Button variant="outline" className="w-full">
-            Publish
-          </Button>
-        </CardFooter>
+       <CardFooter>
+            <Button
+              variant="outline"
+              className="w-full"
+              type="submit"
+              disabled={loadingBtn} 
+            >
+              {loadingBtn ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+                </>
+              ) : (
+                "Publish"
+              )}
+            </Button>
+          </CardFooter>
       </Card>
       </form>
     </div>

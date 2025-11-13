@@ -6,7 +6,7 @@ export const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(undefined);
-
+const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -18,6 +18,9 @@ export const UserProvider = ({ children }) => {
         console.error(err);
         setUser(undefined);
       }
+       finally {
+        setLoading(false); 
+      }
     };
     fetchUser();
   }, []);
@@ -26,7 +29,7 @@ export const UserProvider = ({ children }) => {
     <UserContext.Provider
       value={
         // JSX expression start
-        { user, setUser } // JavaScript object pass
+        { user, setUser ,loading} // JavaScript object pass
       }
     >
       {children}

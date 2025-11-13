@@ -2,10 +2,13 @@ const { publicAxios } = require("@/helper/myAxios");
 
 export const saveBlog = async (blog) => {
   try {
-    const res = await publicAxios.post("/blog", blog);
+    // console.log(blog);
+    
+    const res = await publicAxios.post("/admin/blog", blog);
     return res.data;
   } catch (error) {
-    console.log("blog not fetch", error);
+  console.log(error);
+    throw new Error(error.response.data.message);
   }
 };
 
@@ -14,18 +17,34 @@ export const getAllBlogs = async () => {
     const res = await publicAxios.get("/blog");
     return res.data;
   } catch (error) {
-    console.log("blog not fetch", error);
+ console.log(error);
+    throw new Error(error.response.data.message);
+  
+  }
+};
+
+export const getAllBlogsByOwner = async () => {
+  try {
+    const res = await publicAxios.get("/admin/blog");
+    return res.data;
+  } catch (error) {
+ console.log(error);
+    throw new Error(error.response.data.message);
+  
   }
 };
 
 
+
 export const deleteBlog=async (blogId)=>{
   try{
-const res=await publicAxios.delete(`/blog/${blogId}`);
+const res=await publicAxios.delete(`/admin/blog/${blogId}`);
 return res.data;
   }
   catch(error){
-    console.log("blog not delete", error);
+    console.log(error);
+    throw new Error(error.response.data.message || "Error deleting blog");
+    
   }
 }
 
@@ -36,6 +55,7 @@ export const getBlogById=async(blogId)=>{
     return res.data;
   }
   catch(error){
-    console.log("blog not fetch by id", error);
+ console.log(error);
+    throw new Error(error.response.data.message);
   }
 }
